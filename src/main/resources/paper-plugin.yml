@@ -2,3 +2,4 @@ name: CpsLimit
 version: '${version}'
 main: de.affenherzog.cpslimit.CpsLimit
 api-version: '1.20'
+depend: [ ProtocolLib ]
