@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.minecrell.plugin-yml.paper' version '0.6.0'
 }
 
 group = 'de.affenherzog'
@@ -22,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
 
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
 
@@ -51,11 +52,14 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('paper-plugin.yml') {
-        expand props
+paper {
+    main = 'de.affenherzog.cpslimit.CpsLimit'
+    name = 'CpsLimit'
+    apiVersion = 1.20
+
+    serverDependencies {
+        'ProtocolLib' {
+            required = true
+        }
     }
 }
