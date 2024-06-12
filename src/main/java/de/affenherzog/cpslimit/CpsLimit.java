@@ -37,6 +37,14 @@ public final class CpsLimit extends JavaPlugin {
     this.clearClicksEverySecond();
 
     this.registerListener();
+    this.registerOnlinePlayer();
+  }
+
+  private void registerOnlinePlayer() {
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      cpsLimitPlayers.put(player, new CpsLimitPlayer(player));
+    }
+
   }
 
   @Override
