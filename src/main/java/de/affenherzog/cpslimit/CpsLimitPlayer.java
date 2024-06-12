@@ -8,24 +8,21 @@ public class CpsLimitPlayer {
   @Getter
   private Player player;
 
-  private int clicks = 0;
+  private long lastClick = System.currentTimeMillis();
 
   public CpsLimitPlayer(Player player) {
     this.player = player;
   }
 
   public boolean clickAllowed() {
-    if (clicks >= CpsLimit.getInstance().getMaxCps()) {
-      return false;
+    final long currentTimeMillis = System.currentTimeMillis();
+
+    if (currentTimeMillis - CpsLimit.getInstance().getCooldownMillis()  >= lastClick) {
+      this.lastClick = currentTimeMillis;
+      return true;
     }
 
-    this.clicks++;
-
-    return true;
-  }
-
-  public void resetClicks() {
-    this.clicks = 0;
+    return false;
   }
 
 }

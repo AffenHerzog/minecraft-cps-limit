@@ -25,7 +25,7 @@ public final class CpsLimit extends JavaPlugin {
   private final HashMap<Player, CpsLimitPlayer> cpsLimitPlayers = new HashMap<>();
 
   @Getter
-  private final int maxCps = 10;
+  private final int cooldownMillis = 100;
 
   @Override
   public void onEnable() {
@@ -34,8 +34,6 @@ public final class CpsLimit extends JavaPlugin {
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
     this.registerClickPacketListener();
-    this.clearClicksEverySecond();
-
     this.registerListener();
     this.registerOnlinePlayer();
   }
@@ -72,14 +70,6 @@ public final class CpsLimit extends JavaPlugin {
         //empty on purpose
       }
     });
-  }
-
-  private void clearClicksEverySecond() {
-    Bukkit.getScheduler().runTaskTimer(this, () -> {
-      for (CpsLimitPlayer player: cpsLimitPlayers.values()) {
-        player.resetClicks();
-      }
-    }, 0L, 20L);
   }
 
   private void registerListener() {
