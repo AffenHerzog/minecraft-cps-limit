@@ -31,7 +31,7 @@ public final class CpsLimit extends JavaPlugin {
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
     this.registerConfig();
-    this.registerClickPacketListener();
+    this.registerPacketListener();
     this.registerListener();
     this.registerOnlinePlayer();
   }
@@ -43,7 +43,7 @@ public final class CpsLimit extends JavaPlugin {
 
   private void registerOnlinePlayer() {
     for (Player player : Bukkit.getOnlinePlayers()) {
-      cpsLimitPlayers.put(player, new PlayerClickCooldown());
+      cpsLimitPlayers.put(player, new PlayerClickCooldown(player));
     }
   }
 
@@ -51,8 +51,13 @@ public final class CpsLimit extends JavaPlugin {
   public void onDisable() {
   }
 
-  private void registerClickPacketListener() {
-    this.protocolManager.addPacketListener(new PacketAdapter(this, Client.USE_ENTITY) {
+  private void registerPacketListener() {
+    this.registerArmAnimationListener();
+    this.registerUseEntityListener();
+  }
+
+  private void registerArmAnimationListener() {
+    this.protocolManager.addPacketListener(new PacketAdapter(this, Client.ARM_ANIMATION) {
       @Override
       public void onPacketReceiving(PacketEvent event) {
         final Player player = event.getPlayer();
@@ -63,6 +68,26 @@ public final class CpsLimit extends JavaPlugin {
         }
 
         if (!playerClickCooldown.clickAllowed()) {
+          event.setCancelled(true);
+        }
+      }
+    });
+  }
+
+  private void registerUseEntityListener() {
+    this.protocolManager.addPacketListener(new PacketAdapter(this, Client.USE_ENTITY) {
+      @Override
+      public void onPacketReceiving(PacketEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerClickCooldown playerClickCooldown = cpsLimitPlayers.get(player);
+
+        if (playerClickCooldown == null) {
+          return;
+        }
+
+        if (playerClickCooldown.clickAllowed()) {
+          playerClickCooldown.onClick();
+        } else {
           event.setCancelled(true);
         }
       }

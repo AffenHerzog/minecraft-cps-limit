@@ -13,7 +13,7 @@ public class PlayerJoinListener implements Listener {
   @EventHandler
   public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
     final Player player = event.getPlayer();
-    final PlayerClickCooldown playerClickCooldown = new PlayerClickCooldown();
+    final PlayerClickCooldown playerClickCooldown = new PlayerClickCooldown(player);
 
     CpsLimit.getInstance().getCpsLimitPlayers().put(player, playerClickCooldown);
   }
