@@ -52,7 +52,7 @@ public final class CpsLimit extends JavaPlugin {
   }
 
   private void registerClickPacketListener() {
-    this.protocolManager.addPacketListener(new PacketAdapter(this, Client.ARM_ANIMATION) {
+    this.protocolManager.addPacketListener(new PacketAdapter(this, Client.USE_ENTITY) {
       @Override
       public void onPacketReceiving(PacketEvent event) {
         final Player player = event.getPlayer();
