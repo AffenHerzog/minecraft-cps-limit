@@ -22,10 +22,7 @@ public final class CpsLimit extends JavaPlugin {
   private ProtocolManager protocolManager;
 
   @Getter
-  private final HashMap<Player, CpsLimitPlayer> cpsLimitPlayers = new HashMap<>();
-
-  @Getter
-  private final int cooldownMillis = 100;
+  private final HashMap<Player, PlayerClickCooldown> cpsLimitPlayers = new HashMap<>();
 
   @Override
   public void onEnable() {
@@ -33,16 +30,21 @@ public final class CpsLimit extends JavaPlugin {
 
     this.protocolManager = ProtocolLibrary.getProtocolManager();
 
+    this.registerConfig();
     this.registerClickPacketListener();
     this.registerListener();
     this.registerOnlinePlayer();
   }
 
+  private void registerConfig() {
+    getConfig().options().copyDefaults(true);
+    saveConfig();
+  }
+
   private void registerOnlinePlayer() {
     for (Player player : Bukkit.getOnlinePlayers()) {
-      cpsLimitPlayers.put(player, new CpsLimitPlayer(player));
+      cpsLimitPlayers.put(player, new PlayerClickCooldown());
     }
-
   }
 
   @Override
@@ -54,20 +56,15 @@ public final class CpsLimit extends JavaPlugin {
       @Override
       public void onPacketReceiving(PacketEvent event) {
         final Player player = event.getPlayer();
-        final CpsLimitPlayer cpsLimitPlayer = cpsLimitPlayers.get(player);
+        final PlayerClickCooldown playerClickCooldown = cpsLimitPlayers.get(player);
 
-        if (cpsLimitPlayer == null) {
+        if (playerClickCooldown == null) {
           return;
         }
 
-        if (!cpsLimitPlayer.clickAllowed()) {
+        if (!playerClickCooldown.clickAllowed()) {
           event.setCancelled(true);
         }
-      }
-
-      @Override
-      public void onPacketSending(PacketEvent event) {
-        //empty on purpose
       }
     });
   }
